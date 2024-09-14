@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<!--
+(c) 2005-2015 Copyright, Real-Time Innovations.  All rights reserved.
+No duplications, whole or partial, manual or electronic, may be made
+without express written permission.  Any such copies, or revisions thereof,
+must display this notice unaltered.
+This code contains trade secrets of Real-Time Innovations, Inc.
+ -->
+
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/5.1.0/rti_dds_profiles.xsd" version="5.1.0">
+
+    <!-- Qos Library -->
+	<qos_library name="QosLibrary">
+
+	</qos_library>
+
+    <!-- types -->
+    <types>
+    <struct name="ExampleMessage">
+      <member name="NumberMember" type="long" key="true"/>
+      <member name="StingMember" stringMaxLength="128" type="string"/>
+    </struct>
+
+    </types>
+
+
+    <!-- Domain Library -->
+	<!-- this is related to the domain 0 that we set on shape deme-->
+    <domain_library name="MyDomainLibrary">
+        <domain name="MyDomain" domain_id="0">
+
+            <register_type name="ExampleMessage"  type_ref="ExampleMessage" />
+            <topic name="Example_topic" register_type_ref="ExampleMessage"/>
+
+        </domain>
+    </domain_library>
+
+
+    <!-- Participant library -->
+    <domain_participant_library name="MyParticipantLibrary">
+
+        <domain_participant name="Example_pub" domain_ref="MyDomainLibrary::MyDomain">
+            <publisher name="MyPublisher">
+                <data_writer name="MyWriter" topic_ref="Example_topic">
+                    <datawriter_qos>
+                        <reliability>
+                            <kind>RELIABLE_RELIABILITY_QOS</kind>
+<!--                            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>-->
+                        </reliability>
+                        <durability>
+<!--                            <kind>VOLATILE_DURABILITY_QOS</kind>-->
+                            <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                        </durability>
+                        <history>
+<!--		                    <kind>KEEP_ALL_HISTORY_QOS</kind>-->
+                            <kind>KEEP_LAST_HISTORY_QOS</kind>
+                            <depth>10</depth>
+	                    </history>
+                    </datawriter_qos>
+                </data_writer>
+            </publisher>
+        </domain_participant>
+
+        <domain_participant name="Example_sub" domain_ref="MyDomainLibrary::MyDomain">
+            <subscriber name="MySubscriber">
+                <data_reader name="MyReader" topic_ref="Example_topic" >
+                    <datareader_qos>
+                        <reliability>
+                            <kind>RELIABLE_RELIABILITY_QOS</kind>
+<!--                            <kind>BEST_EFFORT_RELIABILITY_QOS</kind>-->
+                        </reliability>
+                        <durability>
+<!--                            <kind>VOLATILE_DURABILITY_QOS</kind>-->
+                            <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+<!--                            <kind>TRANSIENT_DURABILITY_QOS</kind>-->
+                        </durability>
+                        <history>
+<!--		                    <kind>KEEP_ALL_HISTORY_QOS</kind>-->
+                            <kind>KEEP_LAST_HISTORY_QOS</kind>
+                            <depth>10</depth>
+	                    </history>
+                    </datareader_qos>
+<!--                <filter name="ExampleFilter" kind="builtin.sql">-->
+<!--                    <expression> Example > 2 </expression>-->
+<!--                </filter>-->
+                </data_reader>
+            </subscriber>
+        </domain_participant>
+
+    </domain_participant_library>
+</dds>
